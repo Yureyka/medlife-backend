@@ -3,7 +3,6 @@ import mongoose, { Schema, Document } from "mongoose";
 export interface IComment extends Document {
   name: string;
   comment: string;
-  date: Date;
 }
 
 const CommentSchema = new Schema(
@@ -16,10 +15,7 @@ const CommentSchema = new Schema(
       type: String,
       required: "Comment is required",
     },
-    date: {
-      type: Date,
-      default: new Date(),
-    },
+    isShowing: Boolean,
   },
   {
     timestamps: true,

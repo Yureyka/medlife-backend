@@ -1,12 +1,12 @@
 import express from "express";
 
 import { NewsModel } from "../models";
-import { removeNullField } from "../utils";
+import { PaginationRequest, removeNullField } from "../utils";
 
 class NewsController {
   showAll(req: express.Request, res: express.Response) {
-    NewsModel.find()
-      .sort({ date: -1 })
+    NewsModel.find({ isShowing: true })
+      .sort({ createdAt: -1 })
       .exec((err, news) => {
         if (err) {
           return res.status(500).json(err);
@@ -16,14 +16,14 @@ class NewsController {
       });
   }
 
-  showByPage(req: express.Request, res: express.Response) {
+  showPaginated(req: PaginationRequest, res: express.Response) {
     const pageOptions = {
-      page: 1,
-      limit: 9,
+      page: parseInt(req.query.page),
+      limit: parseInt(req.query.pageSize),
     };
 
     NewsModel.find()
-      .sort({ date: -1 })
+      .sort({ createdAt: -1 })
       .skip((pageOptions.page - 1) * pageOptions.limit)
       .limit(pageOptions.limit)
       .exec((err, news) => {
@@ -41,8 +41,8 @@ class NewsController {
 
           res.status(200).json({
             page: pageOptions.page,
-            total_page: maxPage,
-            results: news,
+            totalCount: Math.ceil(count / pageOptions.limit),
+            data: news,
           });
         });
       });
@@ -62,30 +62,17 @@ class NewsController {
       });
   }
 
-  showLast(req: express.Request, res: express.Response) {
-    NewsModel.find({}, "_id image title short_description date")
-      .sort({ date: -1 })
-      .limit(3)
-      .exec((err, news) => {
-        if (err) {
-          return res.status(500).json(err);
-        }
-        res.status(200).json(news);
-      });
-  }
-
   create(req: any, res: express.Response) {
-    const admin: string = req.user && req.user.admin;
-    if (!admin) {
-      return res.status(403).json({ message: "No access" });
-    }
+    // const admin: string = req.user && req.user.admin;
+    // if (!admin) {
+    //   return res.status(403).json({ message: "No access" });
+    // }
 
     const postData = {
-      image: req.file.path,
       title: req.body.title,
-      short_description: req.body.short_description,
       description: req.body.description,
-      date: req.body.date,
+      isShowing: req.body.isShowing,
+      image: (req.file && req.file.path) || null,
     };
     const news = new NewsModel(postData);
     news
@@ -99,18 +86,17 @@ class NewsController {
   }
 
   update(req: any, res: express.Response) {
-    const admin: string = req.user && req.user.admin;
-    if (!admin) {
-      return res.status(403).json({ message: "No access" });
-    }
+    // const admin: string = req.user && req.user.admin;
+    // if (!admin) {
+    //   return res.status(403).json({ message: "No access" });
+    // }
 
     const id: string = req.params.id;
     const postData = {
-      image: (req.file && req.file.path) || null,
       title: req.body.title,
-      short_description: req.body.short_description,
       description: req.body.description,
-      date: req.body.date,
+      isShowing: req.body.isShowing,
+      image: (req.file && req.file.path) || null,
     };
     removeNullField(postData);
     NewsModel.findByIdAndUpdate(
@@ -127,10 +113,10 @@ class NewsController {
   }
 
   delete(req: any, res: express.Response) {
-    const admin: string = req.user && req.user.admin;
-    if (!admin) {
-      return res.status(403).json({ message: "No access" });
-    }
+    // const admin: string = req.user && req.user.admin;
+    // if (!admin) {
+    //   return res.status(403).json({ message: "No access" });
+    // }
 
     const id: string = req.params.id;
     NewsModel.findOneAndRemove({ _id: id })

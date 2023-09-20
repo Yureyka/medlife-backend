@@ -8,3 +8,4 @@ export { default as CommentController } from "./CommentController";
 export { default as OrderController } from "./OrderController";
 export { default as GalleryController } from "./GalleryController";
 export { default as CallRequestController } from "./CallRequestController";
+export { default as AppointmentController } from "./AppointmentController";

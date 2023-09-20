@@ -1,10 +1,9 @@
 import express from "express";
 
-import { ServiceModel, ServicesGroupModel } from "../models";
+import { AppointmentModel } from "../models";
 import { PaginationRequest } from "../utils";
-import { IService } from "../models/Service";
 
-class ServiceController {
+class AppointmentController {
   showAll(req: PaginationRequest<{ filter: string }>, res: express.Response) {
     const pageOptions = {
       page: parseInt(req.query.page),
@@ -12,15 +11,16 @@ class ServiceController {
       filter: new RegExp(req.query.filter, "i"),
     };
 
-    ServiceModel.find(
+    AppointmentModel.find(
       pageOptions.filter
         ? {
             $or: [
               { name: { $regex: pageOptions.filter } },
+              { phone: { $regex: pageOptions.filter } },
               {
                 $expr: {
                   $regexMatch: {
-                    input: { $toString: "$price" }, // Преобразование числа в строку
+                    input: { $toString: "$createdAt" },
                     regex: pageOptions.filter,
                   },
                 },
@@ -34,15 +34,16 @@ class ServiceController {
         const totalCount = Math.ceil(count / pageOptions.limit);
         const skip = (pageOptions.page - 1) * pageOptions.limit;
 
-        ServiceModel.find(
+        AppointmentModel.find(
           pageOptions.filter
             ? {
                 $or: [
-                  { name: { $regex: pageOptions.filter } },
+                  { fullName: { $regex: pageOptions.filter } },
+                  { position: { $regex: pageOptions.filter } },
                   {
                     $expr: {
                       $regexMatch: {
-                        input: { $toString: "$price" }, // Преобразование числа в строку
+                        input: { $toString: "$createdAt" },
                         regex: pageOptions.filter,
                       },
                     },
@@ -51,8 +52,7 @@ class ServiceController {
               }
             : {}
         )
-          .populate("serviceGroup")
-          .sort({ name: 1 })
+          .sort({ createdAt: -1 })
           .skip(skip)
           .limit(pageOptions.limit)
           .then((results) => {
@@ -70,33 +70,20 @@ class ServiceController {
       });
   }
 
-  create(req: any, res: express.Response) {
-    // const admin: string = req.user && req.user.admin;
-    // if (!admin) {
-    //   return res.status(403).json({ message: "No access" });
-    // }
-
+  create(req: express.Request, res: express.Response) {
     const postData = {
       name: req.body.name,
-      price: req.body.price,
+      phone: req.body.phone,
+      online: req.body.online,
       serviceGroup: req.body.serviceGroupId,
+      message: req.body.message,
+      isHandled: false,
     };
-    const service = new ServiceModel(postData);
-    service
+    const callRequest = new AppointmentModel(postData);
+    callRequest
       .save()
-      .then((service: IService) => {
-        ServicesGroupModel.findByIdAndUpdate(
-          postData.serviceGroup,
-          { $push: { services: service._id } },
-          { upsert: true },
-          (err) => {
-            if (err) {
-              return res.status(500).json({ message: err });
-            }
-          }
-        );
-
-        res.status(200).json(service);
+      .then((obj: any) => {
+        res.status(200).json(obj);
       })
       .catch((reason) => {
         res.status(500).json({ message: reason.message });
@@ -110,28 +97,16 @@ class ServiceController {
     // }
 
     const id: string = req.params.id;
-
-    ServiceModel.findOneAndRemove({ _id: id })
-      .then((service) => {
-        if (service) {
-          ServicesGroupModel.findOneAndUpdate(
-            { services: id },
-            { $pull: { services: id } },
-            { upsert: true },
-            (err) => {
-              if (err) {
-                return res.status(500).json({ message: err });
-              }
-            }
-          );
-
-          return res.status(200).json({
-            message: "Service deleted",
+    AppointmentModel.findOneAndRemove({ _id: id })
+      .then((callRequest) => {
+        if (callRequest) {
+          res.status(200).json({
+            message: `Request '${callRequest.name}' deleted`,
           });
         }
       })
       .catch(() => {
-        res.status(404).json({ message: "Service not found" });
+        res.status(404).json({ message: `Request not found` });
       });
   }
 
@@ -144,22 +119,25 @@ class ServiceController {
     const id: string = req.params.id;
     const postData: any = {
       name: req.body.name,
-      price: req.body.price,
+      phone: req.body.phone,
+      online: req.body.online,
       serviceGroup: req.body.serviceGroupId,
+      message: req.body.message,
+      isHandled: req.body.isHandled,
     };
 
-    ServiceModel.findByIdAndUpdate(
+    AppointmentModel.findByIdAndUpdate(
       id,
       { $set: postData },
       { new: true },
-      (err, service) => {
+      (err, request) => {
         if (err) {
           return res.status(404).json(err);
         }
-        res.status(200).json(service);
+        res.status(200).json(request);
       }
     );
   }
 }
 
-export default ServiceController;
+export default AppointmentController;

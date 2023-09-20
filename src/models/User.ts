@@ -3,65 +3,53 @@ import isEmail from "validator/lib/isEmail";
 import { generatePasswordHash } from "../utils";
 
 export interface IUser extends Document {
-    admin: Boolean;
-    fullname: string;
-    phone: string;
-    email: string;
-    password: string;
-    address: string;
-    orders: Array<Object>;
+  login: string;
+  email: string;
+  password: string;
 }
 
 const UserSchema = new Schema(
-    {
-        admin: {
-            type: Boolean,
-            default: false
-        },
-        fullname: String,
-        phone: String,
-        email: {
-            type: String,
-            unique: true,
-            required: "Email address is required!",
-            validate: [isEmail, "Invalid email"]
-        },
-        password: {
-            type: String,
-            required: "Password is required"
-        },
-        address: String,
-        orders: [
-            {
-                type: Schema.Types.ObjectId,
-                ref: "Order"
-            }
-        ]
+  {
+    login: {
+      unique: true,
+      type: String,
+      default: false,
+      required: "Login is required",
     },
-    {
-        timestamps: true
-    }
+
+    email: {
+      type: String,
+      unique: true,
+    },
+    password: {
+      type: String,
+      required: "Password is required",
+    },
+  },
+  {
+    timestamps: true,
+  }
 );
 
 UserSchema.pre("save", async function (next) {
-    const user: any = this;
+  const user: any = this;
 
-    if (!user.isModified("password")) {
-        return next();
-    }
+  if (!user.isModified("password")) {
+    return next();
+  }
 
-    user.password = await generatePasswordHash(user.password);
+  user.password = await generatePasswordHash(user.password);
 });
 
 UserSchema.pre("findOneAndUpdate", async function (next) {
-    // @ts-ignore
-    const user: any = this._update;
+  // @ts-ignore
+  const user: any = this._update;
 
-    if (!user.$set.password) {
-        return next();
-    }
+  if (!user.$set.password) {
+    return next();
+  }
 
-    user.$set.password = await generatePasswordHash(user.$set.password);
+  user.$set.password = await generatePasswordHash(user.$set.password);
 });
 
 const UserModel = mongoose.model<IUser>("User", UserSchema);

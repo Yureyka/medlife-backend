@@ -8,3 +8,4 @@ export { default as CommentModel } from "./Comment";
 export { default as OrderModel } from "./Order";
 export { default as GalleryModel } from "./Gallery";
 export { default as CallRequestModel } from "./CallRequest";
+export { default as AppointmentModel } from "./Appointment";

@@ -70,7 +70,7 @@ class DoctorController {
           .skip(skip)
           .limit(pageOptions.limit)
           .then((results) => {
-            if (pageOptions.page > totalCount) {
+            if (pageOptions.page > totalCount && results.length !== 0) {
               return res.status(404).json({
                 message: `Page ${pageOptions.page} not found`,
               });

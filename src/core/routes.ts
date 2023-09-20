@@ -13,6 +13,7 @@ import {
   CommentController,
   OrderController,
   CallRequestController,
+  AppointmentController,
 } from "../controllers";
 import { checkAuth } from "../middlewares";
 
@@ -28,61 +29,61 @@ const createRoutes = (app: express.Express, upload: any) => {
   const Gallery = new GalleryController();
   const News = new NewsController();
   const Comment = new CommentController();
-  const Order = new OrderController();
   const CallRequest = new CallRequestController();
+  const Appointment = new AppointmentController();
 
-  app.get("/user/me", User.getMe);
-  app.get("/user/stats", User.getCount);
-  app.post("/user/signup", User.create);
-  app.post("/user/signin", User.login);
-  app.put("/user/update", User.update);
+  app.get("/api/user/me", User.getMe);
+  app.post("/api/user/create", User.create);
+  app.post("/api/user/login", User.login);
 
-  app.get("/doctors", Doctor.showPaginated);
-  app.get("/doctors/showAll", Doctor.showAll);
-  app.get("/doctors/:id", Doctor.showById);
-  app.post("/doctors/create", upload.single("image"), Doctor.create);
-  app.put("/doctors/update/:id", upload.single("image"), Doctor.update);
-  app.delete("/doctors/delete/:id", Doctor.delete);
+  app.get("/api/doctors", Doctor.showPaginated);
+  app.get("/api/doctors/showAll", Doctor.showAll);
+  app.get("/api/doctors/:id", Doctor.showById);
+  app.post("/api/doctors/create", upload.single("image"), Doctor.create);
+  app.put("/api/doctors/update/:id", upload.single("image"), Doctor.update);
+  app.delete("/api/doctors/delete/:id", Doctor.delete);
 
-  app.get("/service-groups-all", ServicesGroup.showAll);
-  app.get("/service-groups", ServicesGroup.showGroups);
-  app.get("/service-groups/table", ServicesGroup.getServicesTable);
-  app.post(
-    "/service-group/create",
-    upload.single("file"),
-    ServicesGroup.create
-  );
-  app.put("/service-group/:id", ServicesGroup.update);
-  app.delete("/service-group/:id", ServicesGroup.delete);
+  app.get("/api/service-groups-all", ServicesGroup.showAll);
+  app.get("/api/services-groups-paginated", ServicesGroup.showPaginated);
+  app.get("/api/service-groups/:key", ServicesGroup.showOneGroupServices);
+  app.get("/api/service-groups", ServicesGroup.showGroups);
+  app.get("/api/service-groups/table", ServicesGroup.getServicesTable);
+  app.post("/api/service-groups/create", ServicesGroup.create);
+  app.put("/api/service-groups/update/:id", ServicesGroup.update);
+  app.delete("/api/service-groups/delete/:id", ServicesGroup.delete);
 
-  // app.get("/service/:id", Service.showById);
-  app.get("/services", Service.showAll);
-  app.post("/services/create", Service.create);
-  app.put("/services/update/:id", Service.update);
-  app.delete("/services/delete/:id", Service.delete);
+  app.get("/api/services", Service.showAll);
+  app.post("/api/services/create", Service.create);
+  app.put("/api/services/update/:id", Service.update);
+  app.delete("/api/services/delete/:id", Service.delete);
 
-  app.get("/comments", Comment.showAll);
-  app.post("/comments/create", Comment.create);
-  app.put("/comments/:id", Comment.update);
-  app.delete("/comments/:id", Comment.delete);
+  app.get("/api/comments", Comment.showAll);
+  app.get("/api/comments-paginated", Comment.showPaginated);
+  app.post("/api/comments/create", Comment.create);
+  app.put("/api/comments/update/:id", Comment.update);
+  app.delete("/api/comments/delete/:id", Comment.delete);
 
-  app.get("/news", News.showByPage);
-  app.get("/news/all", News.showAll);
-  app.get("/news/last", News.showLast);
-  app.get("/news/:id", News.showById);
-  app.post("/news/create", upload.single("file"), News.create);
-  app.put("/news/update/:id", upload.single("file"), News.update);
-  app.delete("/news/delete/:id", News.delete);
+  app.get("/api/news", News.showPaginated);
+  app.get("/api/news/all", News.showAll);
+  app.get("/api/news/:id", News.showById);
+  app.post("/api/news/create", upload.single("image"), News.create);
+  app.put("/api/news/update/:id", upload.single("image"), News.update);
+  app.delete("/api/news/delete/:id", News.delete);
 
-  app.get("/gallery", Gallery.showAll);
-  app.get("/gallery-paginated", Gallery.showPaginated);
-  app.post("/gallery/create", upload.single("image"), Gallery.create);
-  app.delete("/gallery/delete/:id", Gallery.delete);
+  app.get("/api/gallery", Gallery.showAll);
+  app.get("/api/gallery-paginated", Gallery.showPaginated);
+  app.post("/api/gallery/create", upload.single("image"), Gallery.create);
+  app.delete("/api/gallery/delete/:id", Gallery.delete);
 
-  app.get("/call-requests", CallRequest.showAll);
-  app.post("/call-requests/create", CallRequest.create);
-  app.delete("/call-requests/delete/:id", CallRequest.delete);
-  app.put("/call-requests/update/:id", CallRequest.update);
+  app.get("/api/call-requests", CallRequest.showAll);
+  app.post("/api/call-requests/create", CallRequest.create);
+  app.delete("/api/call-requests/delete/:id", CallRequest.delete);
+  app.put("/api/call-requests/update/:id", CallRequest.update);
+
+  app.get("/api/appointments", Appointment.showAll);
+  app.post("/api/appointments/create", Appointment.create);
+  app.delete("/api/appointments/delete/:id", Appointment.delete);
+  app.put("/api/appointments/update/:id", Appointment.update);
 };
 
 export default createRoutes;
