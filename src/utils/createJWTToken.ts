@@ -2,7 +2,7 @@ import jwt from "jsonwebtoken";
 import { reduce } from "lodash";
 
 interface ILoginData {
-    email: string;
+    login: string;
     password: string;
 }
 

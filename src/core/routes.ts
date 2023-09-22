@@ -7,11 +7,9 @@ import {
   DoctorController,
   ServicesGroupController,
   ServiceController,
-  FactoryController,
   NewsController,
   GalleryController,
   CommentController,
-  OrderController,
   CallRequestController,
   AppointmentController,
 } from "../controllers";
@@ -33,7 +31,7 @@ const createRoutes = (app: express.Express, upload: any) => {
   const Appointment = new AppointmentController();
 
   app.get("/api/user/me", User.getMe);
-  app.post("/api/user/create", User.create);
+  // app.post("/api/user/create", User.create);
   app.post("/api/user/login", User.login);
 
   app.get("/api/doctors", Doctor.showPaginated);

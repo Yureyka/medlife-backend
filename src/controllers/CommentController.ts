@@ -16,10 +16,11 @@ class CommentController {
       });
   }
 
-  showPaginated(
-    req: PaginationRequest<{ filter: string }>,
-    res: express.Response
-  ) {
+  showPaginated(req: any, res: express.Response) {
+    const admin: string = req.user && req.user.admin;
+    if (!admin) {
+      return res.status(403).json({ message: "No access" });
+    }
     const pageOptions = {
       page: parseInt(req.query.page),
       limit: parseInt(req.query.pageSize),
@@ -88,10 +89,10 @@ class CommentController {
   }
 
   update(req: any, res: express.Response) {
-    // const admin: string = req.user && req.user.admin;
-    // if (!admin) {
-    //   return res.status(403).json({ message: "No access" });
-    // }
+    const admin: string = req.user && req.user.admin;
+    if (!admin) {
+      return res.status(403).json({ message: "No access" });
+    }
 
     const id: string = req.params.id;
     const postData = {
@@ -113,10 +114,10 @@ class CommentController {
   }
 
   delete(req: any, res: express.Response) {
-    // const admin: string = req.user && req.user.admin;
-    // if (!admin) {
-    //   return res.status(403).json({ message: "No access" });
-    // }
+    const admin: string = req.user && req.user.admin;
+    if (!admin) {
+      return res.status(403).json({ message: "No access" });
+    }
 
     const id: string = req.params.id;
     CommentModel.findOneAndRemove({ _id: id })
@@ -129,39 +130,6 @@ class CommentController {
       })
       .catch(() => {
         res.status(404).json({ message: `Comment not found` });
-      });
-  }
-
-  getCount(req: express.Request, res: express.Response) {
-    Promise.all([
-      CommentModel.countDocuments(),
-      CommentModel.countDocuments({
-        createdAt: {
-          $gte: new Date(new Date().getTime() - 31 * 60 * 60 * 24 * 1000),
-        },
-      }),
-      CommentModel.countDocuments({
-        createdAt: {
-          $gte: new Date(new Date().getTime() - 7 * 60 * 60 * 24 * 1000),
-        },
-      }),
-      CommentModel.countDocuments({
-        createdAt: {
-          $gte: new Date(new Date().getTime() - 1 * 60 * 60 * 24 * 1000),
-        },
-      }),
-    ])
-      .then((results) => {
-        const [all, lastMonth, lastWeek, lastDay] = results;
-        res.status(200).json({
-          all,
-          lastMonth,
-          lastWeek,
-          lastDay,
-        });
-      })
-      .catch((err) => {
-        res.status(500).json(err);
       });
   }
 }

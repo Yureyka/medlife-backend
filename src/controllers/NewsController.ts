@@ -16,7 +16,11 @@ class NewsController {
       });
   }
 
-  showPaginated(req: PaginationRequest, res: express.Response) {
+  showPaginated(req: any, res: express.Response) {
+    const admin: string = req.user && req.user.admin;
+    if (!admin) {
+      return res.status(403).json({ message: "No access" });
+    }
     const pageOptions = {
       page: parseInt(req.query.page),
       limit: parseInt(req.query.pageSize),
@@ -63,10 +67,10 @@ class NewsController {
   }
 
   create(req: any, res: express.Response) {
-    // const admin: string = req.user && req.user.admin;
-    // if (!admin) {
-    //   return res.status(403).json({ message: "No access" });
-    // }
+    const admin: string = req.user && req.user.admin;
+    if (!admin) {
+      return res.status(403).json({ message: "No access" });
+    }
 
     const postData = {
       title: req.body.title,
@@ -86,10 +90,10 @@ class NewsController {
   }
 
   update(req: any, res: express.Response) {
-    // const admin: string = req.user && req.user.admin;
-    // if (!admin) {
-    //   return res.status(403).json({ message: "No access" });
-    // }
+    const admin: string = req.user && req.user.admin;
+    if (!admin) {
+      return res.status(403).json({ message: "No access" });
+    }
 
     const id: string = req.params.id;
     const postData = {
@@ -113,10 +117,10 @@ class NewsController {
   }
 
   delete(req: any, res: express.Response) {
-    // const admin: string = req.user && req.user.admin;
-    // if (!admin) {
-    //   return res.status(403).json({ message: "No access" });
-    // }
+    const admin: string = req.user && req.user.admin;
+    if (!admin) {
+      return res.status(403).json({ message: "No access" });
+    }
 
     const id: string = req.params.id;
     NewsModel.findOneAndRemove({ _id: id })

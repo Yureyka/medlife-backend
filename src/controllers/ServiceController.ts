@@ -20,7 +20,7 @@ class ServiceController {
               {
                 $expr: {
                   $regexMatch: {
-                    input: { $toString: "$price" }, // Преобразование числа в строку
+                    input: { $toString: "$price" },
                     regex: pageOptions.filter,
                   },
                 },
@@ -42,7 +42,7 @@ class ServiceController {
                   {
                     $expr: {
                       $regexMatch: {
-                        input: { $toString: "$price" }, // Преобразование числа в строку
+                        input: { $toString: "$price" },
                         regex: pageOptions.filter,
                       },
                     },
@@ -71,10 +71,10 @@ class ServiceController {
   }
 
   create(req: any, res: express.Response) {
-    // const admin: string = req.user && req.user.admin;
-    // if (!admin) {
-    //   return res.status(403).json({ message: "No access" });
-    // }
+    const admin: string = req.user && req.user.admin;
+    if (!admin) {
+      return res.status(403).json({ message: "No access" });
+    }
 
     const postData = {
       name: req.body.name,
@@ -104,10 +104,10 @@ class ServiceController {
   }
 
   delete(req: any, res: express.Response) {
-    // const admin: string = req.user && req.user.admin;
-    // if (!admin) {
-    //   return res.status(403).json({ message: "No access" });
-    // }
+    const admin: string = req.user && req.user.admin;
+    if (!admin) {
+      return res.status(403).json({ message: "No access" });
+    }
 
     const id: string = req.params.id;
 
@@ -136,10 +136,10 @@ class ServiceController {
   }
 
   update(req: any, res: express.Response) {
-    // const admin: string = req.user && req.user.admin;
-    // if (!admin) {
-    //   return res.status(403).json({ message: "No access" });
-    // }
+    const admin: string = req.user && req.user.admin;
+    if (!admin) {
+      return res.status(403).json({ message: "No access" });
+    }
 
     const id: string = req.params.id;
     const postData: any = {

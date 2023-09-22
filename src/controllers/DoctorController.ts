@@ -15,10 +15,11 @@ class DoctorController {
     });
   }
 
-  showPaginated(
-    req: PaginationRequest<{ filter: string }>,
-    res: express.Response
-  ) {
+  showPaginated(req: any, res: express.Response) {
+    const admin: string = req.user && req.user.admin;
+    if (!admin) {
+      return res.status(403).json({ message: "No access" });
+    }
     const pageOptions = {
       page: parseInt(req.query.page),
       limit: parseInt(req.query.pageSize),
@@ -95,10 +96,10 @@ class DoctorController {
   }
 
   create(req: any, res: express.Response) {
-    // const admin: string = req.user && req.user.admin;
-    // if (!admin) {
-    //   return res.status(403).json({ message: "No access" });
-    // }
+    const admin: string = req.user && req.user.admin;
+    if (!admin) {
+      return res.status(403).json({ message: "No access" });
+    }
 
     const postData = {
       fullName: req.body.fullName,
@@ -119,10 +120,10 @@ class DoctorController {
   }
 
   update(req: any, res: express.Response) {
-    // const admin: string = req.user && req.user.admin;
-    // if (!admin) {
-    //   return res.status(403).json({ message: "No access" });
-    // }
+    const admin: string = req.user && req.user.admin;
+    if (!admin) {
+      return res.status(403).json({ message: "No access" });
+    }
 
     const id: string = req.params.id;
 
@@ -149,10 +150,10 @@ class DoctorController {
   }
 
   delete(req: any, res: express.Response) {
-    // const admin: string = req.user && req.user.admin;
-    // if (!admin) {
-    //   return res.status(403).json({ message: "No access" });
-    // }
+    const admin: string = req.user && req.user.admin;
+    if (!admin) {
+      return res.status(403).json({ message: "No access" });
+    }
 
     const id: string = req.params.id;
     DoctorModel.findOneAndRemove({ _id: id })

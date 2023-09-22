@@ -22,11 +22,15 @@ class UserController {
     });
   };
 
-  create(req: express.Request, res: express.Response) {
+  create(req: any, res: express.Response) {
+    const admin: string = req.user && req.user.admin;
+    if (!admin) {
+      return res.status(403).json({ message: "No access" });
+    }
     const postData = {
       login: req.body.login,
-      email: req.body.email,
       password: req.body.password,
+      admin: req.body.admin,
     };
     const user = new UserModel(postData);
     user
@@ -60,36 +64,10 @@ class UserController {
         });
       } else {
         res.status(401).json({
-          message: "Incorrect password or email",
+          message: "Incorrect password or login",
         });
       }
     });
-  }
-
-  update(req: any, res: express.Response) {
-    const userId: string = req.user && req.user._id;
-    const postData: any = {
-      fullname: req.body.fullname,
-      phone: req.body.phone,
-      address: req.body.address,
-    };
-    if (req.body.password) {
-      postData.password = req.body.password;
-    }
-
-    UserModel.findByIdAndUpdate(userId, { $set: postData }, { new: true })
-      .populate({
-        path: "orders",
-        select: "_id createdAt cart status",
-        populate: { path: "cart.product", select: "_id name price" },
-      })
-      .exec((err, user) => {
-        if (err || !user) {
-          return res.status(404).json({ message: "User not found" });
-        }
-
-        res.status(200).json(user);
-      });
   }
 }
 

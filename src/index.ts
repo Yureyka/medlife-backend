@@ -15,10 +15,10 @@ const PORT = process.env.PORT || 3004;
 
 app.use("/uploads", express.static("uploads"));
 
-// app.use(express.static(__dirname + "/build"));
-// app.get("/", function (request, response) {
-//   response.sendFile(__dirname + "/build/index.html");
-// });
+app.use(express.static(__dirname + "/build"));
+app.get("*", function (request, response) {
+  response.sendFile(__dirname + "/build/index.html");
+});
 
 app.listen(PORT, () => {
   console.log(`Server: http://localhost:${PORT}`);

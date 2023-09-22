@@ -1,9 +1,7 @@
 import express from "express";
-import XLSX, { write, utils } from "xlsx-js-style";
+import XLSX, { write } from "xlsx-js-style";
 
-import { ServiceModel, ServicesGroupModel } from "../models";
-import { IService } from "../models/Service";
-import { IServiceGroup } from "../models/ServicesGroup";
+import { ServicesGroupModel } from "../models";
 import { PaginationRequest } from "../utils";
 
 class ServicesGroupController {
@@ -19,10 +17,11 @@ class ServicesGroupController {
       });
   }
 
-  showPaginated(
-    req: PaginationRequest<{ filter: string }>,
-    res: express.Response
-  ) {
+  showPaginated(req: any, res: express.Response) {
+    const admin: string = req.user && req.user.admin;
+    if (!admin) {
+      return res.status(403).json({ message: "No access" });
+    }
     const pageOptions = {
       page: parseInt(req.query.page),
       limit: parseInt(req.query.pageSize),
@@ -139,10 +138,10 @@ class ServicesGroupController {
   }
 
   create(req: any, res: express.Response) {
-    // const admin: string = req.user && req.user.admin;
-    // if (!admin) {
-    //   return res.status(403).json({ message: "No access" });
-    // }
+    const admin: string = req.user && req.user.admin;
+    if (!admin) {
+      return res.status(403).json({ message: "No access" });
+    }
 
     const postData = {
       name: req.body.name,
@@ -161,10 +160,10 @@ class ServicesGroupController {
   }
 
   delete(req: any, res: express.Response) {
-    // const admin: string = req.user && req.user.admin;
-    // if (!admin) {
-    //   return res.status(403).json({ message: "No access" });
-    // }
+    const admin: string = req.user && req.user.admin;
+    if (!admin) {
+      return res.status(403).json({ message: "No access" });
+    }
 
     const id: string = req.params.id;
     ServicesGroupModel.findOneAndRemove({ _id: id })
@@ -181,10 +180,10 @@ class ServicesGroupController {
   }
 
   update(req: any, res: express.Response) {
-    // const admin: string = req.user && req.user.admin;
-    // if (!admin) {
-    //   return res.status(403).json({ message: "No access" });
-    // }
+    const admin: string = req.user && req.user.admin;
+    if (!admin) {
+      return res.status(403).json({ message: "No access" });
+    }
 
     const id: string = req.params.id;
     const postData = {

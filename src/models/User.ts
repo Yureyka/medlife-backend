@@ -4,8 +4,8 @@ import { generatePasswordHash } from "../utils";
 
 export interface IUser extends Document {
   login: string;
-  email: string;
   password: string;
+  admin: boolean;
 }
 
 const UserSchema = new Schema(
@@ -16,14 +16,13 @@ const UserSchema = new Schema(
       default: false,
       required: "Login is required",
     },
-
-    email: {
-      type: String,
-      unique: true,
-    },
     password: {
       type: String,
       required: "Password is required",
+    },
+    admin: {
+      type: Boolean,
+      required: "Role is required",
     },
   },
   {
